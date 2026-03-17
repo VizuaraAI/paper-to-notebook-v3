@@ -12,9 +12,10 @@
   - Files: `backend/pdf_extractor.py`, `tests/test_pdf_extractor.py`
   - Completed: 2026-03-17 — PyMuPDF-based extractor with 4 passing tests (single page, multi page, empty, invalid)
 
-- [ ] Task 3: ArXiv paper fetcher module (P0)
+- [x] Task 3: ArXiv paper fetcher module (P0)
   - Acceptance: `fetch_arxiv_pdf(url_or_id) -> bytes` function that accepts an arXiv URL (e.g., `https://arxiv.org/abs/2401.12345`) or bare ID, downloads the PDF, and returns raw bytes; tested with a real arXiv ID
   - Files: `backend/arxiv_fetcher.py`, `tests/test_arxiv_fetcher.py`
+  - Completed: 2026-03-17 — URL/ID parser + PDF fetcher with 6 passing tests including real arXiv download
 
 - [ ] Task 4: Gemini prompt template for notebook generation (P0)
   - Acceptance: A prompt template string that instructs Gemini to generate a notebook following the canonical 8-section structure (Opening, Init, Context, Data Prep, Eval Framework, Reference Impl, Algorithm Impl, Conclusions); returns valid JSON notebook format; prompt stored as a constant
