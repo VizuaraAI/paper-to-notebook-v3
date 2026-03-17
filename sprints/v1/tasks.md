@@ -42,9 +42,10 @@
   - Files: `frontend/src/App.jsx`, `frontend/tests/app.spec.js`
   - Completed: 2026-03-17 — fetch calls to both endpoints, loading spinner, error display, .ipynb download. 7 Playwright tests passing
 
-- [ ] Task 9: End-to-end integration testing and polish (P1)
+- [x] Task 9: End-to-end integration testing and polish (P1)
   - Acceptance: Full flow works: upload PDF → get notebook, paste arXiv URL → get notebook; notebook opens in Google Colab without errors; error states handled gracefully (bad API key, invalid PDF, network errors)
-  - Files: `backend/main.py` (CORS config), any bug fixes across all files
+  - Files: `tests/test_integration.py`, `.gitignore`
+  - Completed: 2026-03-17 — 4 integration tests (full pipelines, CORS, error propagation), .gitignore added. 33 backend + 7 frontend = 40 total tests passing
 
 - [ ] Task 10: Notebook quality refinement — improve prompt and output (P1)
   - Acceptance: Generated notebooks have clear markdown explanations between code cells; code cells are individually runnable; includes pip installs in first cell; includes proper Colab metadata in `.ipynb` structure
