@@ -17,9 +17,10 @@
   - Files: `backend/arxiv_fetcher.py`, `tests/test_arxiv_fetcher.py`
   - Completed: 2026-03-17 — URL/ID parser + PDF fetcher with 6 passing tests including real arXiv download
 
-- [ ] Task 4: Gemini prompt template for notebook generation (P0)
+- [x] Task 4: Gemini prompt template for notebook generation (P0)
   - Acceptance: A prompt template string that instructs Gemini to generate a notebook following the canonical 8-section structure (Opening, Init, Context, Data Prep, Eval Framework, Reference Impl, Algorithm Impl, Conclusions); returns valid JSON notebook format; prompt stored as a constant
-  - Files: `backend/prompt_template.py`
+  - Files: `backend/prompt_template.py`, `tests/test_prompt_template.py`
+  - Completed: 2026-03-17 — Detailed prompt template with 8 sections, ipynb JSON format spec, Colab metadata, 5 passing tests
 
 - [ ] Task 5: Notebook generator module — Gemini API integration (P0)
   - Acceptance: `generate_notebook(paper_text: str, api_key: str) -> dict` function that sends extracted text + prompt to Gemini, parses the response into valid `.ipynb` JSON structure; includes error handling for API failures
