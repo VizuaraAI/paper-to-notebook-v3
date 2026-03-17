@@ -27,9 +27,10 @@
   - Files: `backend/notebook_generator.py`, `tests/test_notebook_generator.py`
   - Completed: 2026-03-17 — Gemini integration with JSON extraction, notebook validation, Colab metadata. 6 passing tests
 
-- [ ] Task 6: FastAPI endpoints — `/api/upload-pdf` and `/api/arxiv-url` (P0)
+- [x] Task 6: FastAPI endpoints — `/api/upload-pdf` and `/api/arxiv-url` (P0)
   - Acceptance: POST `/api/upload-pdf` accepts multipart file + `X-Api-Key` header, returns `.ipynb` JSON; POST `/api/arxiv-url` accepts JSON body `{url: "..."}` + `X-Api-Key` header, returns `.ipynb` JSON; both return proper error codes (400, 422, 500)
-  - Files: `backend/main.py`
+  - Files: `backend/main.py`, `tests/test_api.py`
+  - Completed: 2026-03-17 — Both endpoints with validation, error handling, mocked Gemini calls. 7 passing tests
 
 - [ ] Task 7: Frontend — API key input and PDF upload form (P0)
   - Acceptance: React page with: Gemini API key text input (masked), file upload button for PDF, text input for arXiv URL, "Generate Notebook" button; form validates that API key is provided and either a file or URL is given
