@@ -90,15 +90,22 @@ Return ONLY a valid JSON object representing a Jupyter notebook (.ipynb format).
 ```
 
 ## Important Guidelines
-- Every code cell MUST be independently runnable (no undefined variables from skipped cells)
+- Every code cell MUST be independently runnable when executed in order (no undefined variables from skipped cells)
 - Use verbose print statements — the reader should see what's happening at every step
 - Include type hints in function definitions
 - Add inline comments explaining non-obvious code
 - Keep code cells focused — one concept per cell
-- Use markdown cells liberally to explain what's coming next
+- Use markdown cells liberally to explain what's coming next and summarize what just happened
 - All mathematical notation should use LaTeX in markdown cells
 - The notebook should work on Google Colab with a T4 GPU
 - Do NOT include visualization/plotting code — focus on implementation and numerical results
+- The FIRST code cell MUST contain all pip installs needed for the notebook
+- Use `!pip install -q package_name` format for clean output
+- Each markdown cell should have a clear heading (##) and 2-4 sentences of explanation
+- Print shapes of tensors/arrays after creation to help readers verify correctness
+- Include a "Summary of Results" table at the end comparing baseline vs paper's method
+- Use f-strings for all print statements with descriptive labels
+- Target 25-40 cells total for a comprehensive but focused notebook
 
 ## Paper Text
 

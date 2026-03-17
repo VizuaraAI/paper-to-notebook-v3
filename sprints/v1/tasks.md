@@ -47,6 +47,7 @@
   - Files: `tests/test_integration.py`, `.gitignore`
   - Completed: 2026-03-17 — 4 integration tests (full pipelines, CORS, error propagation), .gitignore added. 33 backend + 7 frontend = 40 total tests passing
 
-- [ ] Task 10: Notebook quality refinement — improve prompt and output (P1)
+- [x] Task 10: Notebook quality refinement — improve prompt and output (P1)
   - Acceptance: Generated notebooks have clear markdown explanations between code cells; code cells are individually runnable; includes pip installs in first cell; includes proper Colab metadata in `.ipynb` structure
   - Files: `backend/prompt_template.py`, `backend/notebook_generator.py`
+  - Completed: 2026-03-17 — Enhanced prompt with quality guidelines, JSON response mode, cell IDs, low temperature for consistency

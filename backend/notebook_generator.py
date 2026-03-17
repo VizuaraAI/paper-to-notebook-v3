@@ -2,6 +2,7 @@ import json
 import re
 
 from google import genai
+from google.genai import types
 from prompt_template import NOTEBOOK_PROMPT_TEMPLATE
 
 
@@ -35,12 +36,13 @@ def _validate_notebook(nb: dict) -> dict:
     nb["metadata"].setdefault("colab", {"provenance": [], "gpuType": "T4"})
     nb["metadata"].setdefault("accelerator", "GPU")
 
-    # Validate each cell
-    for cell in nb["cells"]:
+    # Validate each cell and assign IDs
+    for i, cell in enumerate(nb["cells"]):
         if cell.get("cell_type") == "code":
             cell.setdefault("execution_count", None)
             cell.setdefault("outputs", [])
         cell.setdefault("metadata", {})
+        cell.setdefault("id", f"cell-{i}")
         # Ensure source is a list of strings
         if isinstance(cell.get("source"), str):
             cell["source"] = [cell["source"]]
@@ -57,6 +59,11 @@ def generate_notebook(paper_text: str, api_key: str) -> dict:
     response = client.models.generate_content(
         model="gemini-2.0-flash",
         contents=prompt,
+        config=types.GenerateContentConfig(
+            temperature=0.2,
+            max_output_tokens=8192,
+            response_mime_type="application/json",
+        ),
     )
 
     raw_text = response.text
