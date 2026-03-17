@@ -32,9 +32,10 @@
   - Files: `backend/main.py`, `tests/test_api.py`
   - Completed: 2026-03-17 — Both endpoints with validation, error handling, mocked Gemini calls. 7 passing tests
 
-- [ ] Task 7: Frontend — API key input and PDF upload form (P0)
+- [x] Task 7: Frontend — API key input and PDF upload form (P0)
   - Acceptance: React page with: Gemini API key text input (masked), file upload button for PDF, text input for arXiv URL, "Generate Notebook" button; form validates that API key is provided and either a file or URL is given
-  - Files: `frontend/src/App.jsx`, `frontend/src/App.css`
+  - Files: `frontend/src/App.jsx`, `frontend/tests/app.spec.js`
+  - Completed: 2026-03-17 — Clean form UI with Tailwind, validation, masked API key. 4 Playwright E2E tests passing
 
 - [ ] Task 8: Frontend — API integration and notebook download (P0)
   - Acceptance: Clicking "Generate" sends request to backend with correct headers/body; shows loading spinner during generation; on success, triggers `.ipynb` file download; on error, displays error message to user
