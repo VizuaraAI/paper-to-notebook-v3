@@ -4,6 +4,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --legacy-peer-deps
 COPY . .
+ENV VITE_API_BASE=""
 RUN npm run build
 
 # Stage 2: Serve with nginx
