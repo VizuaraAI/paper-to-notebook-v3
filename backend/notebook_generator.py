@@ -101,7 +101,7 @@ def generate_notebook(paper_text: str, api_key: str) -> dict:
         contents=prompt,
         config=types.GenerateContentConfig(
             temperature=0.2,
-            max_output_tokens=8192,
+            max_output_tokens=65536,
             response_mime_type="application/json",
         ),
     )
