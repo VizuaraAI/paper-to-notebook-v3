@@ -12,6 +12,8 @@ from main import app
 
 client = TestClient(app)
 
+VALID_API_KEY = "test-api-key-12345"
+
 
 def _make_pdf(text: str) -> bytes:
     doc = fitz.open()
@@ -44,21 +46,19 @@ def test_full_pdf_pipeline(mock_gen):
     resp = client.post(
         "/api/upload-pdf",
         files={"file": ("paper.pdf", pdf, "application/pdf")},
-        headers={"X-Api-Key": "test-key"},
+        headers={"X-Api-Key": VALID_API_KEY},
     )
     assert resp.status_code == 200
     nb = resp.json()
 
-    # Validate notebook structure
     assert nb["nbformat"] == 4
     assert isinstance(nb["cells"], list)
     assert len(nb["cells"]) > 0
     assert nb["cells"][0]["cell_type"] in ("markdown", "code")
 
-    # Verify the extracted text was passed to generate_notebook
     call_args = mock_gen.call_args
     assert "test research paper" in call_args[0][0]
-    assert call_args[0][1] == "test-key"
+    assert call_args[0][1] == VALID_API_KEY
 
 
 @patch("main.generate_notebook", return_value=VALID_NOTEBOOK)
@@ -69,14 +69,13 @@ def test_full_arxiv_pipeline(mock_fetch, mock_gen):
     resp = client.post(
         "/api/arxiv-url",
         json={"url": "https://arxiv.org/abs/1706.03762"},
-        headers={"X-Api-Key": "test-key"},
+        headers={"X-Api-Key": VALID_API_KEY},
     )
     assert resp.status_code == 200
     nb = resp.json()
     assert nb["nbformat"] == 4
     assert len(nb["cells"]) > 0
 
-    # Verify arXiv URL was fetched
     mock_fetch.assert_called_once_with("https://arxiv.org/abs/1706.03762")
 
 
@@ -93,13 +92,15 @@ def test_cors_headers():
 
 
 @patch("main.generate_notebook", side_effect=ValueError("Invalid API key"))
-def test_error_propagation(mock_gen):
-    """Errors from notebook generation are returned as 500 with detail."""
+def test_error_propagation_generic(mock_gen):
+    """Errors return generic message, not internal details."""
     pdf = _make_pdf("Test paper")
     resp = client.post(
         "/api/upload-pdf",
         files={"file": ("paper.pdf", pdf, "application/pdf")},
-        headers={"X-Api-Key": "bad-key"},
+        headers={"X-Api-Key": VALID_API_KEY},
     )
     assert resp.status_code == 500
-    assert "Invalid API key" in resp.json()["detail"]
+    detail = resp.json()["detail"]
+    assert detail == "Notebook generation failed"
+    assert "Invalid API key" not in detail
