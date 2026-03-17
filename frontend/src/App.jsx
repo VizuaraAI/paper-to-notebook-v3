@@ -95,12 +95,15 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-lg bg-white rounded-xl shadow-lg p-8">
-        <h1
-          data-testid="title"
-          className="text-2xl font-bold text-gray-800 text-center mb-6"
-        >
-          Paper to Notebook
-        </h1>
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <img src="/vizuara-logo.png" alt="Vizuara" className="h-10 w-10 rounded" />
+          <h1
+            data-testid="title"
+            className="text-2xl font-bold text-gray-800"
+          >
+            Paper to Notebook
+          </h1>
+        </div>
         <p className="text-gray-500 text-center mb-8 text-sm">
           Convert research papers into runnable Google Colab notebooks
         </p>
