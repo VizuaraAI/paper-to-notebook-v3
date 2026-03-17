@@ -37,9 +37,10 @@
   - Files: `frontend/src/App.jsx`, `frontend/tests/app.spec.js`
   - Completed: 2026-03-17 — Clean form UI with Tailwind, validation, masked API key. 4 Playwright E2E tests passing
 
-- [ ] Task 8: Frontend — API integration and notebook download (P0)
+- [x] Task 8: Frontend — API integration and notebook download (P0)
   - Acceptance: Clicking "Generate" sends request to backend with correct headers/body; shows loading spinner during generation; on success, triggers `.ipynb` file download; on error, displays error message to user
-  - Files: `frontend/src/App.jsx`
+  - Files: `frontend/src/App.jsx`, `frontend/tests/app.spec.js`
+  - Completed: 2026-03-17 — fetch calls to both endpoints, loading spinner, error display, .ipynb download. 7 Playwright tests passing
 
 - [ ] Task 9: End-to-end integration testing and polish (P1)
   - Acceptance: Full flow works: upload PDF → get notebook, paste arXiv URL → get notebook; notebook opens in Google Colab without errors; error states handled gracefully (bad API key, invalid PDF, network errors)

@@ -1,12 +1,15 @@
 import { useState } from 'react'
 
+const API_BASE = 'http://localhost:8000'
+
 function App() {
   const [apiKey, setApiKey] = useState('')
   const [arxivUrl, setArxivUrl] = useState('')
   const [file, setFile] = useState(null)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const canSubmit = apiKey.trim() && (file || arxivUrl.trim())
+  const canSubmit = apiKey.trim() && (file || arxivUrl.trim()) && !loading
 
   const handleFileChange = (e) => {
     const selected = e.target.files?.[0]
@@ -19,7 +22,21 @@ function App() {
     setFile(selected || null)
   }
 
-  const handleSubmit = (e) => {
+  const downloadNotebook = (notebook) => {
+    const blob = new Blob([JSON.stringify(notebook, null, 2)], {
+      type: 'application/json',
+    })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'notebook.ipynb'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!apiKey.trim()) {
       setError('Please enter your Gemini API key')
@@ -29,8 +46,44 @@ function App() {
       setError('Please upload a PDF or enter an arXiv URL')
       return
     }
+
     setError('')
-    // API integration will be added in Task 8
+    setLoading(true)
+
+    try {
+      let response
+
+      if (file) {
+        const formData = new FormData()
+        formData.append('file', file)
+        response = await fetch(`${API_BASE}/api/upload-pdf`, {
+          method: 'POST',
+          headers: { 'X-Api-Key': apiKey },
+          body: formData,
+        })
+      } else {
+        response = await fetch(`${API_BASE}/api/arxiv-url`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Api-Key': apiKey,
+          },
+          body: JSON.stringify({ url: arxivUrl }),
+        })
+      }
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.detail || `Server error (${response.status})`)
+      }
+
+      const notebook = await response.json()
+      downloadNotebook(notebook)
+    } catch (err) {
+      setError(err.message || 'Something went wrong')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -115,7 +168,17 @@ function App() {
             disabled={!canSubmit}
             className="w-full py-2.5 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm"
           >
-            Generate Notebook
+            {loading ? (
+              <span data-testid="loading-spinner" className="inline-flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Generating...
+              </span>
+            ) : (
+              'Generate Notebook'
+            )}
           </button>
         </form>
       </div>
