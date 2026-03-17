@@ -7,9 +7,10 @@
   - Files: `backend/main.py`, `backend/requirements.txt`, `frontend/` (Vite scaffold), `frontend/vite.config.js`
   - Completed: 2026-03-17 — Venv created with all deps, FastAPI health endpoint, React+Vite+Tailwind v4 scaffolded, both build/test green
 
-- [ ] Task 2: PDF text extraction module (P0)
+- [x] Task 2: PDF text extraction module (P0)
   - Acceptance: `extract_text(file_bytes) -> str` function that takes PDF bytes and returns cleaned text; tested with a sample PDF; handles multi-page documents
   - Files: `backend/pdf_extractor.py`, `tests/test_pdf_extractor.py`
+  - Completed: 2026-03-17 — PyMuPDF-based extractor with 4 passing tests (single page, multi page, empty, invalid)
 
 - [ ] Task 3: ArXiv paper fetcher module (P0)
   - Acceptance: `fetch_arxiv_pdf(url_or_id) -> bytes` function that accepts an arXiv URL (e.g., `https://arxiv.org/abs/2401.12345`) or bare ID, downloads the PDF, and returns raw bytes; tested with a real arXiv ID
