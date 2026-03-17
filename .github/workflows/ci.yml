@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -103,3 +103,67 @@ jobs:
 
       - name: Run pip-audit
         run: pip-audit -r backend/requirements.txt
+
+  # ─── CD: Deploy to AWS ECS (only on push to main, after all CI passes) ───
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [backend-tests, e2e-tests, security]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform Init & Apply
+        working-directory: infra
+        run: |
+          terraform init
+          terraform apply -auto-approve
+
+      - name: Get ECR URLs and ALB DNS
+        id: infra
+        working-directory: infra
+        run: |
+          echo "backend_ecr=$(terraform output -raw backend_ecr_url)" >> $GITHUB_OUTPUT
+          echo "frontend_ecr=$(terraform output -raw frontend_ecr_url)" >> $GITHUB_OUTPUT
+          echo "alb_dns=$(terraform output -raw alb_dns_name)" >> $GITHUB_OUTPUT
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & push backend image
+        run: |
+          docker build -t ${{ steps.infra.outputs.backend_ecr }}:latest backend/
+          docker push ${{ steps.infra.outputs.backend_ecr }}:latest
+
+      - name: Build & push frontend image
+        run: |
+          docker build -t ${{ steps.infra.outputs.frontend_ecr }}:latest frontend/
+          docker push ${{ steps.infra.outputs.frontend_ecr }}:latest
+
+      - name: Force new ECS deployment
+        run: |
+          aws ecs update-service --cluster paper-to-notebook --service backend --force-new-deployment --region $AWS_REGION
+          aws ecs update-service --cluster paper-to-notebook --service frontend --force-new-deployment --region $AWS_REGION
+
+      - name: Print live URL
+        run: |
+          echo "============================================"
+          echo "  DEPLOYED SUCCESSFULLY!"
+          echo "  URL: http://${{ steps.infra.outputs.alb_dns }}"
+          echo "============================================"
