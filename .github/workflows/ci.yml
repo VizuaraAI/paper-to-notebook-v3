@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install backend dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Run backend tests
+        run: cd backend && python -m pytest ../tests/ -v --ignore=../tests/test_arxiv_fetcher.py -k "not test_fetch_real_paper"
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install backend dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
+
+      - name: Install Playwright Chromium
+        run: cd frontend && npx playwright install --with-deps chromium
+
+      - name: Start backend
+        run: cd backend && python -m uvicorn main:app --port 8000 &
+
+      - name: Start frontend
+        run: cd frontend && npm run dev &
+
+      - name: Wait for backend to be ready
+        run: |
+          for i in $(seq 1 30); do
+            curl -s http://localhost:8000/health && break
+            echo "Waiting for backend... ($i)"
+            sleep 2
+          done
+
+      - name: Wait for frontend to be ready
+        run: |
+          for i in $(seq 1 30); do
+            curl -s http://localhost:5173 && break
+            echo "Waiting for frontend... ($i)"
+            sleep 2
+          done
+
+      - name: Run Playwright tests
+        run: cd frontend && npx playwright test
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-screenshots
+          path: frontend/tests/screenshots/
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install backend dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Install security tools
+        run: pip install semgrep pip-audit
+
+      - name: Run semgrep
+        run: semgrep --config auto backend/
+
+      - name: Run pip-audit
+        run: pip-audit -r backend/requirements.txt

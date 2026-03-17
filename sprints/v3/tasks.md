@@ -31,13 +31,15 @@
 
 ### CI/CD Pipeline
 
-- [ ] Task 6: Initialize GitHub repository and push codebase (P0)
+- [x] Task 6: Initialize GitHub repository and push codebase (P0)
   - Acceptance: GitHub repo created via `gh repo create`; all code pushed to `main` branch; `.gitignore` updated to exclude `venv/`, `node_modules/`, `__pycache__/`, `.env`, `*.pyc`; `git remote -v` shows the GitHub remote; `gh repo view` works
   - Files: `.gitignore`
+  - Completed: 2026-03-17 — Repo at https://github.com/VizuaraAI/paper-to-notebook, all code pushed to main
 
-- [ ] Task 7: Create GitHub Actions CI pipeline (P0)
+- [x] Task 7: Create GitHub Actions CI pipeline (P0)
   - Acceptance: `.github/workflows/ci.yml` runs on push and PR to main. Three parallel jobs: (1) `backend-tests` — sets up Python 3.12, installs requirements, runs `pytest tests/ -v`; (2) `e2e-tests` — sets up Node 20, installs deps + Playwright browsers, starts backend + frontend, runs `npx playwright test`, uploads screenshots as artifacts; (3) `security` — runs `semgrep --config auto backend/` and `pip-audit`. All jobs must pass. Workflow validated with `actionlint` or manual review.
   - Files: `.github/workflows/ci.yml`
+  - Completed: 2026-03-17 — 3 parallel jobs: backend-tests (pytest), e2e-tests (Playwright + screenshots artifact), security (semgrep + pip-audit)
 
 - [ ] Task 8: Verify CI pipeline runs green on GitHub (P0)
   - Acceptance: Push a commit that triggers the CI pipeline; verify all 3 jobs pass on GitHub Actions; download Playwright screenshot artifacts from the Actions run; if any job fails, fix the issue and re-push until green
@@ -45,14 +47,17 @@
 
 ### Docker & Infrastructure
 
-- [ ] Task 9: Create Dockerfiles for backend and frontend (P1)
+- [x] Task 9: Create Dockerfiles for backend and frontend (P1)
   - Acceptance: `backend/Dockerfile` — Python 3.12-slim base, installs requirements, copies backend code, runs uvicorn on port 8000, non-root user. `frontend/Dockerfile` — Node 20-alpine base, multi-stage build (install → build → serve with nginx), serves on port 80. Both images build successfully with `docker build`. Images are reasonably sized (<500MB backend, <100MB frontend).
   - Files: `backend/Dockerfile`, `frontend/Dockerfile`, `frontend/nginx.conf`
+  - Completed: 2026-03-17 — Backend (Python 3.12-slim, non-root user), Frontend (multi-stage Node+nginx), nginx.conf with API proxy, .dockerignore files
 
-- [ ] Task 10: Create docker-compose.yml for local development (P1)
+- [x] Task 10: Create docker-compose.yml for local development (P1)
   - Acceptance: `docker-compose.yml` at project root defines two services: `backend` (builds from `backend/Dockerfile`, port 8000, healthcheck on `/api/health`) and `frontend` (builds from `frontend/Dockerfile`, port 5173→80, depends_on backend). `docker compose up --build` starts both services; frontend can reach backend at `http://backend:8000`; `docker compose down` stops cleanly. Includes `.dockerignore` files.
   - Files: `docker-compose.yml`, `backend/.dockerignore`, `frontend/.dockerignore`
+  - Completed: 2026-03-17 — docker-compose.yml with backend (healthcheck on /api/health) + frontend (depends_on backend healthy), nginx proxies /api/ to backend
 
-- [ ] Task 11: Create Terraform config for AWS ECS Fargate deployment (P2)
+- [x] Task 11: Create Terraform config for AWS ECS Fargate deployment (P2)
   - Acceptance: `infra/main.tf` defines: VPC with public/private subnets, ECR repositories for backend and frontend images, ECS cluster with Fargate, two ECS services (backend + frontend) with task definitions, ALB routing `/api/*` to backend and `/*` to frontend, security groups (ALB public, ECS private). `infra/variables.tf` for configurable values (region, instance count). `infra/outputs.tf` outputs the ALB DNS name. Config validates with `terraform validate` (or is syntactically correct if Terraform CLI not installed).
   - Files: `infra/main.tf`, `infra/variables.tf`, `infra/outputs.tf`
+  - Completed: 2026-03-17 — VPC, ECR, ALB (/api/* → backend, /* → frontend), ECS Fargate (2 tasks each), CloudWatch logs, IAM role, security groups
