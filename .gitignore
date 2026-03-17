@@ -7,3 +7,6 @@ dist/
 .env
 *.egg-info/
 test-results/
+playwright-report/
+frontend/tests/output/
+backend/__pycache__/

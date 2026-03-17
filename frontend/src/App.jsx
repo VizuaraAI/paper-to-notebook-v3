@@ -23,6 +23,11 @@ function App() {
   }
 
   const downloadNotebook = (notebook) => {
+    const confirmed = window.confirm(
+      '⚠️ This notebook contains AI-generated code. Please review all code cells carefully before running them in Google Colab. Do you want to download?'
+    )
+    if (!confirmed) return
+
     const blob = new Blob([JSON.stringify(notebook, null, 2)], {
       type: 'application/json',
     })
@@ -79,6 +84,7 @@ function App() {
 
       const notebook = await response.json()
       downloadNotebook(notebook)
+      setApiKey('')
     } catch (err) {
       setError(err.message || 'Something went wrong')
     } finally {
@@ -180,6 +186,11 @@ function App() {
               'Generate Notebook'
             )}
           </button>
+
+          {/* Safety Notice */}
+          <p data-testid="safety-notice" className="text-xs text-gray-400 text-center mt-2">
+            Generated notebooks contain AI-written code. Always review before executing.
+          </p>
         </form>
       </div>
     </div>
