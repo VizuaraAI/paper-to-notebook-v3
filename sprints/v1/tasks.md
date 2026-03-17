@@ -22,9 +22,10 @@
   - Files: `backend/prompt_template.py`, `tests/test_prompt_template.py`
   - Completed: 2026-03-17 — Detailed prompt template with 8 sections, ipynb JSON format spec, Colab metadata, 5 passing tests
 
-- [ ] Task 5: Notebook generator module — Gemini API integration (P0)
+- [x] Task 5: Notebook generator module — Gemini API integration (P0)
   - Acceptance: `generate_notebook(paper_text: str, api_key: str) -> dict` function that sends extracted text + prompt to Gemini, parses the response into valid `.ipynb` JSON structure; includes error handling for API failures
   - Files: `backend/notebook_generator.py`, `tests/test_notebook_generator.py`
+  - Completed: 2026-03-17 — Gemini integration with JSON extraction, notebook validation, Colab metadata. 6 passing tests
 
 - [ ] Task 6: FastAPI endpoints — `/api/upload-pdf` and `/api/arxiv-url` (P0)
   - Acceptance: POST `/api/upload-pdf` accepts multipart file + `X-Api-Key` header, returns `.ipynb` JSON; POST `/api/arxiv-url` accepts JSON body `{url: "..."}` + `X-Api-Key` header, returns `.ipynb` JSON; both return proper error codes (400, 422, 500)
